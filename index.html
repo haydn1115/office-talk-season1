@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Office Talk · Unit 11 Let's Make a Deal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@font-face{font-family:"Pretendard";font-weight:400;font-display:swap;src:url("Pretendard-Regular.woff2") format("woff2")}
+@font-face{font-family:"Pretendard";font-weight:500;font-display:swap;src:url("Pretendard-Medium.woff2") format("woff2")}
+@font-face{font-family:"Pretendard";font-weight:600;font-display:swap;src:url("Pretendard-SemiBold.woff2") format("woff2")}
+@font-face{font-family:"Pretendard";font-weight:700;font-display:swap;src:url("Pretendard-Bold.woff2") format("woff2")}
+:root{--nv:#0b1533;--nv2:#16224a;--ink:#f3f1ea;--mut:#8f98b5;--soft:#c5cbe0;--gd:#f2c14e;--co:#ff6b4a;--pp:#f4f2eb;--ln:#d8d4c8;--pm:#6b685f;--tx:#2b3350;--ok:#2f7d5b;--bar:58px;--l:40%}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--nv)}
+body{font-family:"Inter Tight","Pretendard",sans-serif;-webkit-font-smoothing:antialiased;color:var(--nv);font-size:17px;line-height:1.55;word-break:keep-all;-webkit-text-size-adjust:100%}
+.se{font-family:"Inter Tight","Pretendard",sans-serif;font-style:normal;font-weight:600;letter-spacing:-.03em}
+.ko{font-family:"Pretendard","Inter Tight",sans-serif;font-size:.9em;letter-spacing:-.014em;line-height:1.7}
+button{font:inherit;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--gd);outline-offset:2px}
+
+/* top bar: the lesson plan drawn to scale, one segment per activity, width = minutes */
+.top{position:sticky;top:0;z-index:6;height:var(--bar);background:var(--nv);display:flex;align-items:stretch;box-shadow:0 1px 0 rgba(243,241,234,.09)}
+#home{background:none;border:0;color:var(--ink);font-weight:600;font-size:17px;letter-spacing:-.02em;padding:0 34px 0 48px;white-space:nowrap}
+#steps{flex:1;display:flex;gap:3px;padding-right:48px;min-width:0}
+#steps button{flex:var(--m) 1 0;min-width:0;background:none;border:0;border-bottom:3px solid rgba(243,241,234,.15);color:var(--mut);font-size:13px;font-weight:500;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 6px 0 1px}
+#steps button i{font-style:normal;font-size:11.5px;opacity:.55;margin-left:6px;display:none}
+#steps button.on i{display:inline}
+#steps button:hover{color:var(--soft)}
+#steps button.done{border-bottom-color:rgba(242,193,78,.45);color:var(--soft)}
+#steps button.on{border-bottom-color:var(--gd);color:var(--ink)}
+#steps button.l2{margin-left:20px}
+
+/* every step is a spread: left = what you hear or are given, right = what you say or write */
+.pg{display:none}
+.pg.on{display:grid;grid-template-columns:var(--l) minmax(0,1fr);min-height:calc(100vh - var(--bar));background:linear-gradient(90deg,var(--nv) 0,var(--nv) var(--l),var(--pp) var(--l))}
+.L{color:var(--ink);padding:60px 48px 130px 48px;min-width:0}
+.R{padding:60px 64px 150px 64px;min-width:0;max-width:880px}
+h1{font-weight:600;font-size:clamp(40px,4.8vw,70px);line-height:.98;letter-spacing:-.05em}
+h2{font-weight:600;font-size:clamp(30px,3.3vw,46px);line-height:1.04;letter-spacing:-.042em}
+.L p{color:var(--soft);margin-top:18px;max-width:46ch}
+.L p.ko{font-size:15.5px}
+.L p b{color:var(--ink);font-weight:600}
+.R>p.ko{font-size:15.5px;color:var(--tx)}
+.lab{font-size:13px;font-weight:600;color:var(--pm);margin-bottom:6px}
+.lab.co{color:var(--co)}
+.hint,.note{font-size:13px;color:var(--pm)}
+.L .note{color:var(--mut);margin-top:14px}
+
+/* start */
+.unit{font-size:14px!important;color:var(--mut)!important;margin:0 0 22px!important}
+.tag{font-size:clamp(28px,3.2vw,44px);color:var(--gd)!important;line-height:1.05;margin-top:12px!important}
+.L .go{margin-top:38px}
+.pairs{display:grid;gap:44px;margin-top:8px}
+.pairs s{display:block;font-size:19px;color:#8d8a80;text-decoration-color:var(--co);text-decoration-thickness:2px}
+.pairs .se{display:block;font-size:clamp(34px,3.6vw,52px);line-height:1.04;margin-top:6px}
+.intro{font-size:15.5px;color:var(--tx);margin-bottom:44px}
+.outro{margin-top:56px;font-size:14.5px;color:var(--pm);max-width:48ch}
+.ai-off{display:none;font-size:13px;color:var(--mut);margin-top:22px;max-width:40ch}
+
+/* say it */
+.prices{display:flex;gap:44px;margin-top:40px}
+.prices div{font-size:13.5px;color:var(--mut)}
+.prices b{display:block;font-weight:600;font-size:64px;line-height:1;letter-spacing:-.05em;color:var(--ink);margin-bottom:8px}
+.prices div+div b{color:var(--gd)}
+
+/* fields & buttons */
+textarea,input[type=text]{width:100%;font:inherit;font-size:18px;color:var(--nv);background:#fff;border:1px solid #cbc6b8;padding:14px 16px;border-radius:8px;outline:none}
+textarea{min-height:130px;resize:vertical;line-height:1.5}
+textarea::placeholder,input::placeholder{color:#b3afa3}
+textarea:focus,input[type=text]:focus{border-color:var(--nv);box-shadow:0 0 0 3px rgba(11,21,51,.09)}
+.row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.btn{background:var(--nv);color:var(--ink);border:1px solid var(--nv);padding:12px 22px;font-weight:600;font-size:15px;border-radius:8px}
+.btn:hover{background:var(--nv2)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.gh{background:none;color:var(--nv);border-color:#aaa594}
+.btn.gh:hover{background:rgba(11,21,51,.05)}
+.btn.mic{background:none;color:var(--nv);border-color:#aaa594;padding:12px 16px;display:none}
+.btn.rec,.btn.mic.rec{background:var(--co);border-color:var(--co);color:#fff}
+.btn.gold{background:var(--gd);border-color:var(--gd);color:var(--nv);padding:15px 30px;font-size:16px}
+.btn.gold:hover{background:#f6cf6f}
+.L .btn.gh{color:var(--ink);border-color:rgba(243,241,234,.4)}
+.L .btn.gh:hover{background:rgba(243,241,234,.08)}
+
+/* feedback */
+.fb{display:none;margin-top:34px}
+.fb.on{display:block}
+.old{font-size:20px;color:#56544e}
+.old s,.why s{text-decoration-color:var(--co);text-decoration-thickness:2px;color:#8d8a80}
+.new{font-size:clamp(30px,3.4vw,46px);line-height:1.06;margin-top:2px}
+.why{margin-top:22px;font-size:15.5px;color:var(--tx);list-style:none}
+.why ul{list-style:none}
+.why li{margin-top:14px}
+.box{background:#fff;border-radius:8px;padding:22px 24px;margin-top:8px}
+
+/* watch */
+.clip{display:block;margin-top:34px;text-decoration:none;border:1px solid rgba(243,241,234,.28);border-radius:12px;padding:30px 30px 28px}
+.clip:hover{border-color:var(--gd)}
+.clip i{display:block;width:0;height:0;border-left:26px solid var(--gd);border-top:16px solid transparent;border-bottom:16px solid transparent;margin-bottom:22px}
+.clip b{display:block;font-weight:600;font-size:26px;letter-spacing:-.03em;line-height:1.15;color:var(--ink)}
+.clip span{display:block;color:var(--mut);font-size:14px;margin-top:8px}
+.vid{margin-top:30px;border-radius:12px;overflow:hidden;background:#000}
+.vid video{display:block;width:100%;aspect-ratio:16/9}
+.q{margin-bottom:30px}
+.q p{font-size:20px;line-height:1.95}
+.q input.gap{display:inline-block;width:186px;border:0;border-bottom:2px solid var(--nv);border-radius:6px 6px 0 0;background:#fff;padding:0 8px;font-size:19px;font-weight:600;margin:0 4px;box-shadow:none}
+.q input.gap:focus{border-bottom-color:var(--co);box-shadow:none}
+.q .res{font-size:14px;min-height:22px;margin-top:2px}
+.okc{color:var(--ok);font-weight:600}.noc{color:var(--co);font-weight:600}
+
+/* mini lesson moves */
+.moves{display:grid;gap:40px}
+.moves h3{font-weight:600;font-size:21px;letter-spacing:-.02em}
+.moves s{display:block;font-size:17px;color:#8d8a80;text-decoration-color:var(--co);text-decoration-thickness:2px;margin-top:8px}
+.moves .se{display:block;font-size:31px;line-height:1.08;margin-top:4px}
+
+/* chunks */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:36px 40px;margin-top:40px}
+.card .se{font-size:32px;line-height:1.05;color:var(--gd)}
+.card .m{font-size:13.5px;color:var(--mut);margin-top:5px}
+.card .x{font-size:16px;color:var(--ink);margin-top:8px}
+
+/* rewrite lists */
+.sw{margin-bottom:34px}
+.sw .k{font-size:13px;color:var(--pm)}
+.sw .o{font-size:20px;font-weight:500;margin:1px 0 10px}
+.sw .ans{display:none;margin-top:12px}
+.sw .ans .se{font-size:29px;line-height:1.1}
+.sw .ans .n{font-size:14px;color:var(--tx);margin-top:4px}
+.ex{margin-top:36px}
+.ex s{display:block;color:var(--mut);text-decoration-color:var(--co);text-decoration-thickness:2px;font-size:17px}
+.ex .se{display:block;color:var(--gd);font-size:32px;line-height:1.08;margin-top:8px}
+
+/* your turn */
+.offer{margin-top:38px;font-size:13.5px;color:var(--mut)}
+.offer b{display:block;font-weight:600;font-size:76px;line-height:1;letter-spacing:-.05em;color:var(--ink);margin-bottom:8px}
+.offer b.win{color:var(--gd)}
+#chips{list-style:none;margin-top:34px;columns:2;column-gap:28px;font-size:15px}
+#chips li{color:var(--mut);padding:5px 0 5px 24px;position:relative;break-inside:avoid}
+#chips li:before{content:"";position:absolute;left:0;top:11px;width:12px;height:12px;border:1.5px solid rgba(243,241,234,.35);border-radius:50%}
+#chips li.hit{color:var(--ink)}
+#chips li.hit:before{background:var(--gd);border-color:var(--gd)}
+.chat{max-height:52vh;overflow-y:auto;padding-right:6px}
+.msg{max-width:80%;padding:12px 16px;margin:0 0 12px;font-size:17px;border-radius:16px}
+.msg.a{background:var(--nv);color:var(--ink);border-bottom-left-radius:4px}
+.msg.u{background:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.msg small{display:block;font-size:11.5px;font-weight:600;opacity:.6;margin-bottom:2px}
+.todo{list-style:none;margin-top:30px;font-size:15px;color:var(--soft)}
+.todo li{padding:5px 0 5px 24px;position:relative}
+.todo li:before{content:"";position:absolute;left:0;top:13px;width:12px;border-top:1.5px solid var(--gd)}
+
+@media (min-width:901px){.pg.stick .L{position:sticky;top:var(--bar);align-self:start}}
+
+/* target phrases: upright, heavy, built to be read at a glance */
+.pairs .se{font-size:clamp(28px,2.9vw,40px);line-height:1.14}
+.new{font-size:clamp(26px,2.6vw,36px);line-height:1.16;margin-top:4px}
+.moves .se{font-size:25px;line-height:1.2}
+.card .se{font-size:24px;line-height:1.15}
+.sw .ans .se{font-size:23px;line-height:1.2}
+.ex .se{font-size:26px;line-height:1.2}
+.tag{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
+
+/* back / next */
+.nav{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:space-between;padding:0 48px 26px;pointer-events:none}
+.nav .btn{pointer-events:auto}
+#prev{background:none;color:var(--ink);border-color:rgba(243,241,234,.4)}
+#prev:hover{background:rgba(243,241,234,.08)}
+#next{padding:13px 34px}
+
+@media (max-width:900px){
+ :root{--bar:52px}
+ #home{padding:0 16px 0 20px;font-size:16px}
+ #steps{padding-right:20px;gap:2px}
+ #steps button{font-size:0;padding:0}
+ #steps button i,#steps button.on i{display:none}
+ #steps button.l2{margin-left:8px}
+ .pg.on{display:block;background:var(--pp)}
+ .L{background:var(--nv);padding:34px 20px 36px}
+ .R{padding:30px 20px 130px}
+ .prices b{font-size:48px}.offer b{font-size:56px}
+ .cards{grid-template-columns:1fr;gap:28px}
+ #chips{columns:1}
+ .msg{max-width:92%}
+ .nav{padding:10px 20px;background:rgba(244,242,235,.95);box-shadow:0 -1px 0 var(--ln)}
+ #prev{color:var(--nv);border-color:#aaa594}
+}
+
+/* watch: in-page player */
+.yt{position:relative;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;margin-top:30px}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.ctl,.loop{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.ctl .btn,.loop .btn{padding:8px 14px;font-size:13.5px}
+.ctl .sp{flex:1}
+#ytT,#lpT{font-size:13px;color:var(--mut);font-variant-numeric:tabular-nums}
+.loop b{font-size:13px;font-weight:600;color:var(--ink);margin-right:4px}
+.L .btn.act{background:var(--gd);border-color:var(--gd);color:var(--nv)}
+#ytGo{background:var(--gd);border-color:var(--gd);color:var(--nv);min-width:92px}
+#ytMsg{font-size:13.5px;color:var(--gd);min-height:22px;margin-top:12px}
+.qa{display:flex;gap:8px;margin-top:4px;flex-wrap:wrap}
+.qa .btn{padding:6px 12px;font-size:13px}
+.qa .seg{display:none}
+#setup{display:none;margin-top:16px;border:1px dashed var(--mut);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--soft)}
+#setup code{display:block;word-break:break-all;margin-top:8px;background:rgba(243,241,234,.1);padding:6px 8px;border-radius:4px;color:var(--ink)}
+#recAu{height:38px;display:none}
+</style>
+</head>
+<body>
+<header class="top"><button id="home">Office Talk</button><nav id="steps" aria-label="Unit steps"></nav></header>
+
+<main>
+<!-- 0 intro -->
+<section class="pg" data-n="Start" data-l="" style="--l:48%">
+  <div class="L">
+    <p class="unit ko">Unit 11 가격·조건 협상</p>
+    <h1>Let’s Make a Deal</h1>
+    <p class="se tag">Say it like a local.</p>
+    <p class="ko">이 유닛을 마치면 <b>조건을 제안하고 조정하며 합의점을 찾을 수 있습니다.</b></p>
+    <div class="go"><button class="btn gold" id="startBtn">Start the unit</button></div>
+    <p class="ai-off ko" id="aioff">이 버전은 내 답을 모범 답안과 비교하는 방식입니다. Chrome에서는 마이크 버튼으로 말해서 입력할 수 있어요.</p>
+  </div>
+  <div class="R">
+    <p class="intro ko">문법은 맞는데 번역투로 들리던 문장을, 이렇게 바꿔 말하게 됩니다.</p>
+    <div class="pairs">
+      <div><s>Please give us a discount.</s><span class="se">Is there any wiggle room on price?</span></div>
+      <div><s>Let’s compromise.</s><span class="se">Could you meet us halfway?</span></div>
+      <div><s>We agree to the contract.</s><span class="se">I think we have a deal.</span></div>
+    </div>
+    <p class="outro ko">50분 수업 두 번입니다. 먼저 말해 보고, The Office의 한 장면에서 실제 표현을 듣고, 거래처 담당자 Alex와 직접 협상한 뒤 확인 이메일까지 씁니다.</p>
+  </div>
+</section>
+
+<!-- 1 say it -->
+<section class="pg stick" data-n="Say it!" data-l="Lesson 1" data-m="8">
+  <div class="L">
+    <h2>Ask for a better price.</h2>
+    <p class="ko">거래처 담당자 Alex가 견적을 보냈습니다. 가격을 낮춰 달라고 영어로 말해 보세요. 사전은 보지 않습니다.</p>
+    <div class="prices"><div class="ko"><b>$48</b>Alex의 견적, 개당</div><div class="ko"><b>$42</b>우리 예산</div></div>
+  </div>
+  <div class="R">
+    <textarea id="say" placeholder="Type what you would say to Alex"></textarea>
+    <div class="row"><button class="btn mic" data-for="say">● Speak</button><button class="btn gh" id="rec2">● Record</button><audio id="recAu" controls></audio><button class="btn" id="sayBtn">Did you say…?</button><span class="hint ko" id="sayHint"></span></div>
+    <div class="fb" id="sayFb">
+      <div class="lab">Did you say…</div><div class="old" id="sayOld"></div>
+      <div class="lab co" style="margin-top:22px">Locals say</div><div class="new se" id="sayNew"></div>
+      <ul class="why ko" id="sayWhy"></ul>
+    </div>
+  </div>
+</section>
+
+<!-- 2 watch -->
+<section class="pg" id="watch" data-n="Watch" data-l="Lesson 1" data-m="13" style="--l:56%">
+  <div class="L">
+    <h2>Watch the pitch.</h2>
+    <p class="ko">Michael이 Chili’s에서 고객을 설득하는 장면입니다. 들으면서 빈칸을 바로 채우세요. 쓰거나, 마이크로 말해서 채울 수 있습니다.</p>
+    <div class="yt"><div id="yt"></div></div>
+    <div class="ctl"><button class="btn" id="ytGo">▶ Play</button><button class="btn gh" id="ytBack">5초 뒤로</button><button class="btn gh" id="ytRe">처음부터</button><button class="btn gh" id="ytSpd">1×</button><span class="sp"></span><span id="ytT"></span></div>
+    <div class="loop ko"><b>구간 반복</b><button class="btn gh" id="lpA">A 시작</button><button class="btn gh" id="lpB">B 끝</button><button class="btn gh" id="lpOn">반복 켜기</button><span id="lpT"></span></div>
+    <div class="ko" id="ytMsg"></div>
+    <p class="note ko">The Office “The Client”. 영상이 보이지 않으면 <a href="https://youtu.be/vYWwfdb2A88?t=230" target="_blank" rel="noopener">YouTube에서 여세요</a>.</p>
+    <div id="setup" class="ko"><b>멈춤 지점 설정 (제작자용)</b><br>영상을 보다가 빈칸 정답이 나온 직후에 버튼을 누르세요. 위에서부터 순서대로입니다.
+      <div class="row"><button class="btn gh" id="cueAdd">여기서 멈춤 지정</button><button class="btn gh" id="cueClr">지우기</button></div>
+      <code id="cueOut"></code></div>
+  </div>
+  <div class="R">
+      <div class="q"><p>Discount suppliers don’t care. Once the competition is gone, they <input type="text" class="gap" id="g1" data-a="jack up"> the prices.</p><div class="qa"><button class="btn mic" data-for="g1">● Speak</button><button class="btn gh seg" data-seg="0">↻ 이 부분 다시 듣기</button></div><div class="res ko"></div></div>
+      <div class="q"><p>Michael asks the client to compromise: “You have to <input type="text" class="gap" id="g2" data-a="meet me halfway|meet me half way">.”</p><div class="qa"><button class="btn mic" data-for="g2">● Speak</button><button class="btn gh seg" data-seg="1">↻ 이 부분 다시 듣기</button></div><div class="res ko"></div></div>
+      <div class="q"><p>The client wants to save money, so he asks: “What’s the <input type="text" class="gap" id="g3" data-a="bottom line">?”</p><div class="qa"><button class="btn mic" data-for="g3">● Speak</button><button class="btn gh seg" data-seg="2">↻ 이 부분 다시 듣기</button></div><div class="res ko"></div></div>
+    <div class="row"><button class="btn" id="watchBtn">Check answers</button></div>
+  </div>
+</section>
+
+<!-- mini lesson -->
+<section class="pg" data-n="Mini Lesson" data-l="Lesson 1" data-m="7" style="--l:56%">
+  <div class="L">
+    <h2>Three moves, thirty seconds.</h2>
+    <div class="vid"><video id="lec" src="lecture.mp4" controls playsinline preload="auto"></video></div>
+    <p class="note ko">이 페이지에 들어오면 자동으로 재생됩니다.</p>
+  </div>
+  <div class="R">
+    <div class="moves">
+      <div><h3>Don’t demand. Ask about room.</h3><s>Please give us a discount.</s><span class="se">Is there any wiggle room on price?</span></div>
+      <div><h3>Don’t announce a compromise. Invite it.</h3><s>Let’s compromise.</s><span class="se">Could you meet us halfway?</span></div>
+      <div><h3>Keep your offer hypothetical.</h3><s>If we order 500 units, will you give us 10% off?</s><span class="se">If we were to order 500 units, would you be able to take 10% off?</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 chunks -->
+<section class="pg" data-n="Key Chunks" data-l="Lesson 1" data-m="22" style="--l:58%">
+  <div class="L">
+    <h2>Eight chunks for the table.</h2>
+    <div class="cards" id="cards"></div>
+  </div>
+  <div class="R">
+    <p class="ko" style="margin-bottom:30px">왼쪽 표현으로 빈칸을 채우세요.</p>
+    <div id="chunkQ"></div>
+    <div class="row"><button class="btn" id="chunkBtn">Check answers</button></div>
+  </div>
+</section>
+
+<!-- 4 switch -->
+<section class="pg stick" data-n="Switch it" data-l="Lesson 2" data-m="10" style="--l:34%">
+  <div class="L">
+    <h2>Switch it.</h2>
+    <p class="ko">문법은 맞지만 번역투로 들리는 문장입니다. 원어민이 쓸 문장으로 바꿔 쓰세요.</p>
+  </div>
+  <div class="R">
+    <div id="swList"></div>
+    <div class="row"><button class="btn" id="swBtn">Check my answers</button><button class="btn gh" id="swShow">Show model answers</button><span class="hint ko" id="swHint"></span></div>
+  </div>
+</section>
+
+<!-- 5 grammar -->
+<section class="pg stick" data-n="Quick Grammar" data-l="Lesson 2" data-m="10">
+  <div class="L">
+    <h2>If we were to…, would you…?</h2>
+    <p class="ko">조건을 던질 때 <b>If we order…, will you…?</b> 는 확정처럼 들립니다. <b>If we were to…, would you…?</b> 로 말하면 가정해 보는 것이 되어 서로 부담 없이 조건을 조정할 수 있습니다.</p>
+    <div class="ex"><s>If we order 500 units, will you give us 10% off?</s><span class="se">If we were to order 500 units, would you be able to take 10% off?</span></div>
+  </div>
+  <div class="R">
+    <div id="grList"></div>
+    <div class="row"><button class="btn" id="grBtn">Check my answers</button><button class="btn gh" id="grShow">Show model answers</button><span class="hint ko" id="grHint"></span></div>
+  </div>
+</section>
+
+<!-- 6 role play -->
+<section class="pg" data-n="Your Turn" data-l="Lesson 2" data-m="20">
+  <div class="L">
+    <h2>Negotiate with Alex.</h2>
+    <p class="ko"><b>$44 이하</b>로 낮추거나, 가격 대신 무료 배송이나 결제 기한 같은 다른 조건을 얻어 내세요.</p>
+    <div class="offer ko"><b id="offer">$48</b>Alex의 현재 제시가</div>
+    <ul id="chips"></ul>
+    <p class="note ko">쓴 표현에는 표시가 켜집니다. 3개 이상 써 보세요.</p>
+  </div>
+  <div class="R">
+    <div class="chat" id="chat"></div>
+    <textarea id="rp" placeholder="Your reply to Alex" style="min-height:76px;margin-top:8px"></textarea>
+    <div class="row"><button class="btn mic" data-for="rp">● Speak</button><button class="btn" id="rpSend">Send</button><button class="btn gh" id="rpEnd">End and get feedback</button><label class="hint ko" id="ttsWrap" style="display:none"><input type="checkbox" id="ttsOn"> Alex 목소리 듣기</label><span class="hint ko" id="rpHint"></span></div>
+    <div class="fb" id="rpFb"><div class="lab">Coach’s notes</div><div class="why ko" id="rpNotes"></div></div>
+  </div>
+</section>
+
+<!-- 7 write -->
+<section class="pg stick" data-n="Write it" data-l="Lesson 2" data-m="10">
+  <div class="L">
+    <h2>Confirm it in writing.</h2>
+    <p class="ko">방금 협상한 내용을 정리해 Alex에게 보내는 확인 이메일을 5문장 안팎으로 쓰세요.</p>
+    <ul class="todo ko"><li>합의한 가격과 조건</li><li>다음 단계와 날짜</li><li>감사 인사</li></ul>
+  </div>
+  <div class="R">
+    <textarea id="wr" style="min-height:260px" placeholder="Hi Alex,&#10;&#10;Thanks for…"></textarea>
+    <div class="row"><button class="btn" id="wrBtn">Get feedback</button><button class="btn gh" id="wrShow">Show a model email</button><span class="hint ko" id="wrHint"></span></div>
+    <div class="fb" id="wrFb"><div class="lab">Feedback</div><div class="why ko" id="wrNotes"></div></div>
+  </div>
+</section>
+</main>
+
+<div class="nav"><button class="btn" id="prev">Back</button><button class="btn" id="next">Next</button></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const norm=s=>s.toLowerCase().replace(/[’']/g,"'").replace(/[^a-z' ]/g,' ').replace(/\s+/g,' ').trim();
+let AI=null,DIC=null,TTS=null;
+
+/* ---------- content ---------- */
+const CHUNKS=[
+["meet (sb) halfway","서로 양보해 중간에서 합의하다","Could you meet us halfway on the delivery fee?"],
+["wiggle room","조정할 여지","Is there any wiggle room on price?"],
+["jack up (the price)","가격을 확 올리다","They jacked up the price right after we signed."],
+["work (it) out","조율해서 해결하다","I’m sure we can work something out."],
+["walk away","협상을 접다","If they won’t move, we’re ready to walk away."],
+["back down","입장을 굽히다","Neither side wanted to back down."],
+["play hardball","강경하게 나오다","They’re playing hardball on payment terms."],
+["seal the deal","계약을 성사시키다","Free shipping sealed the deal."]];
+const CQ=[
+["They won’t lower the price at all. They’re really playing ___.","hardball"],
+["We can’t do $40, and you can’t do $48. Can we meet ___?","halfway"],
+["Is there any ___ room on the deadline?","wiggle"],
+["If the terms don’t improve, we’ll have to ___ away.","walk"]];
+const SW=[
+["가격 인하 요청","Please give us a discount.","Is there any wiggle room on price?","직접 요구 대신 ‘여지’를 묻기"],
+["거절","We cannot accept that.","That’s a bit outside our budget.","단정 대신 예산 핑계로 부드럽게"],
+["보류","Let me think about it.","Let me run this by my team and get back to you.","누구와 확인하고 언제 답할지 말하기"],
+["타협 제안","Let’s compromise.","Could you meet us halfway?","compromise보다 구어적인 표현"],
+["양보 불가","This is our final condition.","That’s non-negotiable for us.","condition은 번역투"],
+["합의","We agree to the contract.","I think we have a deal.","합의 순간의 관용 표현"]];
+const GR=[
+["If we pay in 30 days, will you lower the price?","If we were to pay within 30 days, would you be able to lower the price?"],
+["If we sign for two years, can you include free shipping?","If we were to sign for two years, could you include free shipping?"],
+["If you give us $44, we will order today.","If you were to come down to $44, we would place the order today."]];
+const TARGETS=[
+["wiggle room",/wiggle room/],["meet … halfway",/meet (us|me|you) half ?way/],["run this by …",/run (this|it|that) (by|past)/],
+["get back to you",/get back to you/],["If we were to…",/if (we|you) were to/],["outside our budget",/outside (of )?(our|my|the) budget/],
+["non-negotiable",/non-?negotiable/],["work something out",/work (it|this|something) out/],["we have a deal",/(have|got) a deal/]];
+const MODEL_SAY="I appreciate the quote, but $48 is a bit outside our budget. Is there any wiggle room on price?";
+const MODEL_MAIL="Hi Alex,\n\nThanks for taking the time to talk today. Just to confirm, we agreed on $44 per unit for 500 units, with free shipping on the first order. I’ll run the final numbers by my team and get back to you by Thursday. If everything checks out, I think we have a deal.\n\nThanks again for meeting us halfway.\n\nBest,\nMinji";
+
+/* ---------- steps ---------- */
+const pgs=$$('.pg');let cur=0;const done=new Set();
+function go(i){cur=Math.max(0,Math.min(pgs.length-1,i));pgs.forEach((p,k)=>p.classList.toggle('on',k===cur));
+  {const v=$('#lec');if(v){if(pgs[cur].contains(v)){v.currentTime=0;const pr=v.play();if(pr)pr.catch(()=>{})}else v.pause()}}
+  if(window.ytHook)ytHook(pgs[cur].id==='watch');
+  $$('#steps button').forEach(b=>{const n=+b.dataset.i;b.classList.toggle('on',n===cur);b.classList.toggle('done',n<cur)});
+  $('#prev').style.visibility=$('#next').style.visibility=cur?'visible':'hidden';$('#next').textContent=cur===pgs.length-1?'Finish':'Next';
+  window.scrollTo(0,0)}
+$('#steps').innerHTML=pgs.slice(1).map((p,k)=>`<button data-i="${k+1}" style="--m:${p.dataset.m}" class="${p.dataset.l==='Lesson 2'&&pgs[k].dataset.l!=='Lesson 2'?'l2':''}" title="${p.dataset.l}, ${p.dataset.m}분">${p.dataset.n}<i>${p.dataset.m}분</i></button>`).join('');
+$('#home').onclick=()=>go(0);$('#startBtn').onclick=()=>go(1);
+$('#steps').onclick=e=>{const b=e.target.closest('button');if(b)go(+b.dataset.i)};
+$('#prev').onclick=()=>go(cur-1);
+$('#next').onclick=()=>{if(cur===pgs.length-1){$('#next').textContent='Done';return}go(cur+1)};
+
+/* ---------- AI helpers ---------- */
+async function askJSON(prompt){if(!AI)throw new Error('no-ai');const r=await AI(prompt,{cache:false});const m=(r.text||'').match(/\{[\s\S]*\}/);if(!m)throw new Error('bad');return JSON.parse(m[0])}
+function busy(btn,hint,on,msg){btn.disabled=on;if(hint)hint.textContent=on?(msg||'확인하는 중…'):''}
+function aiFail(hint,e){if(hint)hint.textContent=(e&&e.code==='rate_limited')?'잠시 후 다시 시도해 주세요.':'AI 피드백을 불러오지 못했어요. 모범 답안을 확인하세요.'}
+const COACH="You are an English coach for Korean office workers who know grammar well but sound translated. Be specific and brief. Explanations must be in Korean; corrected English stays in English.";
+
+/* ---------- 1 say it ---------- */
+$('#sayBtn').onclick=async()=>{const t=$('#say').value.trim();if(!t){$('#sayHint').textContent='먼저 문장을 써 주세요.';return}
+  const show=(flags,local,praise)=>{let h=esc(t);(flags||[]).forEach(f=>{const p=esc(f.phrase||'');if(p&&h.includes(p))h=h.replace(p,'<s>'+p+'</s>')});
+    $('#sayOld').innerHTML=h;$('#sayNew').textContent=local;
+    $('#sayWhy').innerHTML=(praise?`<li>${esc(praise)}</li>`:'')+(flags||[]).map(f=>`<li><s>${esc(f.phrase)}</s> — ${esc(f.why)}</li>`).join('');$('#sayFb').classList.add('on')};
+  if(!AI){show([],MODEL_SAY,'AI 없이 모범 답안을 보여 드려요. 내 문장과 비교해 보세요.');return}
+  busy($('#sayBtn'),$('#sayHint'),true);
+  try{const j=await askJSON(`${COACH}
+Situation: a supplier quoted $48 per unit; the learner's budget is $42; the learner asks the supplier (Alex) for a lower price.
+Learner said: <<<${t}>>>
+Reply with ONLY this JSON: {"flags":[{"phrase":"exact substring copied from the learner text that sounds translated, too direct, or unnatural","why":"Korean, one sentence"}],"local":"how a native-speaking colleague would say the whole thing in 1-2 sentences; use 'wiggle room' or 'outside our budget' if natural","praise":"Korean, one short sentence on what already works"}
+At most 3 flags. Use an empty array if it already sounds natural.`);show(j.flags,j.local||MODEL_SAY,j.praise);busy($('#sayBtn'),$('#sayHint'),false)}
+  catch(e){busy($('#sayBtn'),$('#sayHint'),false);show([],MODEL_SAY,'');aiFail($('#sayHint'),e)}};
+
+/* ---------- 2 watch / gap checks ---------- */
+function checkGaps(sec){[...sec.querySelectorAll('.q')].forEach(q=>{const i=q.querySelector('input'),ok=i.dataset.a.split('|').some(a=>norm(i.value)===norm(a));
+  q.querySelector('.res').innerHTML=ok?'<span class="okc">맞아요</span>':`<span class="noc">정답</span> ${esc(i.dataset.a.split('|')[0])}`})}
+$('#watchBtn').onclick=e=>checkGaps(e.target.closest('.pg'));
+
+/* ---------- 3 chunks ---------- */
+$('#cards').innerHTML=CHUNKS.map(c=>`<div class="card"><div class="se">${c[0]}</div><div class="m ko">${c[1]}</div><div class="x">${c[2]}</div></div>`).join('');
+$('#chunkQ').innerHTML=CQ.map((q,i)=>`<div class="q"><p>${esc(q[0]).replace('___',`<input type="text" class="gap" data-a="${q[1]}">`)}</p><div class="res ko"></div></div>`).join('');
+$('#chunkBtn').onclick=e=>checkGaps(e.target.closest('.pg'));
+
+/* ---------- 4/5 rewrite lists ---------- */
+function buildList(el,items,pre){el.innerHTML=items.map((s,i)=>`<div class="sw"><div class="k ko">${pre?esc(s[0]):'Rewrite with “were to … would/could”'}</div><div class="o">${esc(pre?s[1]:s[0])}</div><input type="text" data-i="${i}" placeholder="Your version…"><div class="ans"><div class="se"></div><div class="n ko"></div></div></div>`).join('')}
+buildList($('#swList'),SW,true);buildList($('#grList'),GR,false);
+function reveal(el,items,pre,notes){$$('#'+el.id+' .sw').forEach((d,i)=>{const a=d.querySelector('.ans');a.style.display='block';a.querySelector('.se').textContent=pre?items[i][2]:items[i][1];
+  a.querySelector('.n').innerHTML=notes&&notes[i]?esc(notes[i]):(pre?esc(items[i][3]):'')})}
+async function checkList(el,items,pre,btn,hint,task){const ans=$$('#'+el.id+' input').map(i=>i.value.trim());
+  if(!AI||ans.every(a=>!a)){reveal(el,items,pre);if(!AI)hint.textContent='모범 답안과 비교해 보세요.';return}
+  busy(btn,hint,true);
+  try{const j=await askJSON(`${COACH}
+Task: ${task}
+Items (original → model answer → learner answer):
+${items.map((s,i)=>`${i+1}. ${pre?s[1]:s[0]} → ${pre?s[2]:s[1]} → ${ans[i]||'(blank)'}`).join('\n')}
+Reply with ONLY this JSON: {"notes":["Korean, one sentence per item: start with 좋아요 if the learner answer is natural and keeps the meaning (other natural wordings are fine), otherwise say what to fix; for blank say 모범 답안을 확인하세요"]}
+The notes array must have exactly ${items.length} strings.`);reveal(el,items,pre,j.notes);busy(btn,hint,false)}
+  catch(e){busy(btn,hint,false);reveal(el,items,pre);aiFail(hint,e)}}
+$('#swBtn').onclick=()=>checkList($('#swList'),SW,true,$('#swBtn'),$('#swHint'),'rewrite translated-sounding negotiation sentences the way a native speaker would say them');
+$('#swShow').onclick=()=>reveal($('#swList'),SW,true);
+$('#grBtn').onclick=()=>checkList($('#grList'),GR,false,$('#grBtn'),$('#grHint'),'rewrite each real conditional as a tentative offer with "If we/you were to ..., would/could ..."');
+$('#grShow').onclick=()=>reveal($('#grList'),GR,false);
+
+/* ---------- 6 role play ---------- */
+const chat=[];const hits=new Set();
+function drawChips(){$('#chips').innerHTML=TARGETS.map((t,i)=>`<li class="${hits.has(i)?'hit':''}">${t[0]}</li>`).join('')}
+function addMsg(who,text){chat.push({who,text});const d=document.createElement('div');d.className='msg '+(who==='Alex'?'a':'u');d.innerHTML=`<small>${who}</small>${esc(text)}`;$('#chat').appendChild(d);$('#chat').scrollTop=1e6;
+  if(who==='Alex'&&TTS&&$('#ttsOn').checked)TTS.speak(text,{language:'en'}).catch(()=>{})}
+const OPEN="Thanks for coming in. As I mentioned in the quote, we’re at $48 per unit for this order.";
+drawChips();addMsg('Alex',OPEN);
+const setOffer=v=>{v=+v;if(!(v>=40&&v<=48))return;$('#offer').textContent='$'+v;$('#offer').classList.toggle('win',v<=44)};
+const SOFF=[48,45,44,44];
+const SCRIPT=["I hear you, but $48 already reflects our best material costs. What number did you have in mind?","Hmm. $42 is tough for us. If you were to commit to 500 units, I could look at $45.","Let me see… I can do $44 if we extend the contract to a year. Would that work?","Okay. $44 with free shipping on the first order. I think we have a deal."];
+$('#rpSend').onclick=async()=>{const t=$('#rp').value.trim();if(!t)return;$('#rp').value='';addMsg('You',t);
+  TARGETS.forEach((x,i)=>{if(x[1].test(norm(t)))hits.add(i)});drawChips();
+  const turn=chat.filter(m=>m.who==='You').length;
+  const fb=()=>{const k=Math.min(turn-1,SCRIPT.length-1);addMsg('Alex',SCRIPT[k]);setOffer(SOFF[k])};
+  if(!AI){fb();return}
+  busy($('#rpSend'),$('#rpHint'),true,'Alex is typing…');
+  try{const j=await askJSON(`You are Alex, a friendly but firm account manager at a US packaging supplier, in a price negotiation with a Korean buyer who is practising business English. Your opening quote is $48 per unit. Rules: stay in character; speak natural spoken American English, 1-3 short sentences, no lists, no coaching, no Korean. Start firm. Give small concessions only when the buyer gives a reason, offers something (volume, longer contract, faster payment) or makes a tentative offer. Never go below $43. You may offer free shipping or better payment terms instead of price. If the buyer is rude or just repeats a demand, hold your position politely. If you reach agreement, confirm the terms in one sentence.
+Conversation so far:
+${chat.map(m=>m.who+': '+m.text).join('\n')}
+Reply with ONLY this JSON: {"say":"Alex's next line","offer":the per-unit price Alex is offering after this line, as a number}`);
+    busy($('#rpSend'),$('#rpHint'),false);if(!j.say)throw new Error('bad');addMsg('Alex',String(j.say).replace(/^Alex:\s*/,'').trim());setOffer(j.offer)}
+  catch(e){busy($('#rpSend'),$('#rpHint'),false);fb();aiFail($('#rpHint'),e)}};
+$('#rp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#rpSend').click()}});
+$('#rpEnd').onclick=async()=>{const mine=chat.filter(m=>m.who==='You');const used=[...hits].map(i=>TARGETS[i][0]);
+  const base=`<li>사용한 타겟 표현 ${used.length}개: ${used.length?esc(used.join(', ')):'없음'}</li>`;
+  $('#rpFb').classList.add('on');
+  if(!AI||!mine.length){$('#rpNotes').innerHTML='<ul>'+base+'<li>타겟 표현을 3개 이상 넣어 다시 시도해 보세요.</li></ul>';return}
+  busy($('#rpEnd'),$('#rpHint'),true,'피드백을 정리하는 중…');
+  try{const j=await askJSON(`${COACH}
+This is a role-play price negotiation. The learner is "You"; Alex is the supplier. Target expressions for the unit: wiggle room, meet (sb) halfway, run this by my team, get back to you, If we were to..., outside our budget, non-negotiable, work something out, we have a deal.
+Transcript:
+${chat.map(m=>m.who+': '+m.text).join('\n')}
+Reply with ONLY this JSON: {"result":"Korean, one sentence: what was agreed and whether the goal ($44 or better, or other terms) was reached","better":[{"you":"exact learner sentence that sounded translated or too direct","try":"more natural English version","why":"Korean, one sentence"}],"next":"Korean, one sentence of advice for the next attempt"}
+At most 3 items in better.`);
+    $('#rpNotes').innerHTML='<ul>'+base+`<li>${esc(j.result||'')}</li>`+(j.better||[]).map(b=>`<li><s>${esc(b.you)}</s><br><span class="se" style="font-size:24px">${esc(b.try)}</span><br>${esc(b.why)}</li>`).join('')+`<li>${esc(j.next||'')}</li></ul>`;busy($('#rpEnd'),$('#rpHint'),false)}
+  catch(e){busy($('#rpEnd'),$('#rpHint'),false);$('#rpNotes').innerHTML='<ul>'+base+'</ul>';aiFail($('#rpHint'),e)}};
+
+/* ---------- 7 write ---------- */
+$('#wrShow').onclick=()=>{$('#wrFb').classList.add('on');$('#wrNotes').innerHTML=`<div class="box" style="white-space:pre-wrap;font-size:17px">${esc(MODEL_MAIL)}</div>`};
+$('#wrBtn').onclick=async()=>{const t=$('#wr').value.trim();if(!t){$('#wrHint').textContent='먼저 이메일을 써 주세요.';return}
+  if(!AI){$('#wrShow').click();$('#wrHint').textContent='모범 이메일과 비교해 보세요.';return}
+  busy($('#wrBtn'),$('#wrHint'),true);
+  try{const j=await askJSON(`${COACH}
+Task: a short follow-up email to a supplier (Alex) confirming what was agreed in a price negotiation, the next step, and thanks. About 5 sentences.
+Learner email: <<<${t}>>>
+Reply with ONLY this JSON: {"lines":[{"orig":"one learner sentence, copied","ok":true or false,"fix":"more natural version if ok is false, else empty","why":"Korean, one short sentence"}],"overall":"Korean, two sentences: what works, and the one thing to improve first"}
+Go sentence by sentence. Mark ok true when the sentence is natural business email English.`);
+    $('#wrFb').classList.add('on');$('#wrNotes').innerHTML='<ul>'+(j.lines||[]).map(l=>l.ok?`<li>${esc(l.orig)} <span class="okc">좋아요</span>${l.why?' — '+esc(l.why):''}</li>`:`<li><s>${esc(l.orig)}</s><br><span class="se" style="font-size:24px">${esc(l.fix)}</span><br>${esc(l.why)}</li>`).join('')+`</ul><p style="margin-top:12px">${esc(j.overall||'')}</p>`;busy($('#wrBtn'),$('#wrHint'),false)}
+  catch(e){busy($('#wrBtn'),$('#wrHint'),false);$('#wrShow').click();aiFail($('#wrHint'),e)}};
+
+/* ---------- dictation ---------- */
+let recBtn=null;
+$$('.btn.mic').forEach(b=>b.onclick=()=>{if(!DIC)return;if(recBtn){DIC.stop().catch(()=>{});return}
+  recBtn=b;b.classList.add('rec');b.textContent='■ Stop';DIC.start().catch(()=>{recBtn=null;b.classList.remove('rec');b.textContent='● Speak'})});
+function wireDic(){DIC.onFinal(({text})=>{if(!recBtn)return;const ta=$('#'+recBtn.dataset.for);ta.value=(ta.value?ta.value+' ':'')+text});
+  DIC.onState(({state})=>{if(state==='idle'&&recBtn){recBtn.classList.remove('rec');recBtn.textContent='● Speak';recBtn=null}});
+  $$('.btn.mic').forEach(b=>b.style.display='inline-block')}
+
+/* ---------- YouTube: in-page, autoplay, pause points, A-B repeat ---------- */
+const START=230,qs=new URLSearchParams(location.search);
+let CUES=(qs.get('cues')||'').split(',').map(Number).filter(x=>x>0);
+let P=null,ytOK=false,lpA=null,lpB=null,lpOn=false,segEnd=null;const fired=new Set();
+const mmss=t=>Math.floor(t/60)+':'+String(Math.floor(t%60)).padStart(2,'0');
+const say=m=>{$('#ytMsg').textContent=m||''};
+function ytStart(){if(!ytOK)return;fired.clear();segEnd=null;say('');P.seekTo(START,true);P.playVideo();
+  setTimeout(()=>{if(pgs[cur].id!=='watch')return;const st=P.getPlayerState();if(st===-1||st===5){P.mute();P.playVideo();say('브라우저가 소리를 막았어요. ▶ Play를 누르면 소리가 켜집니다.')}},1800)}
+window.ytHook=on=>{if(!ytOK)return;on?ytStart():P.pauseVideo()};
+window.onYouTubeIframeAPIReady=()=>{P=new YT.Player('yt',{videoId:'vYWwfdb2A88',playerVars:{start:START,rel:0,playsinline:1},
+  events:{onReady:()=>{ytOK=true;if(pgs[cur].id==='watch')ytStart()},
+          onStateChange:e=>{$('#ytGo').textContent=e.data===1?'❚❚ Pause':'▶ Play'},
+          onError:()=>say('이 영상은 여기서 재생할 수 없어요. 아래 링크로 여세요.')}})};
+{const t=document.createElement('script');t.src='https://www.youtube.com/iframe_api';document.head.appendChild(t)}
+$('#ytGo').onclick=()=>{if(!ytOK)return;if(P.getPlayerState()===1)P.pauseVideo();else{say('');P.unMute();P.playVideo()}};
+$('#ytBack').onclick=()=>{if(ytOK){P.seekTo(Math.max(0,P.getCurrentTime()-5),true);P.playVideo()}};
+$('#ytRe').onclick=ytStart;
+{const sp=[1,.75,.5];let k=0;$('#ytSpd').onclick=()=>{if(!ytOK)return;k=(k+1)%sp.length;P.setPlaybackRate(sp[k]);$('#ytSpd').textContent=sp[k]+'×'}}
+function lpDraw(){$('#lpT').textContent=(lpA!=null?'A '+mmss(lpA):'')+(lpB!=null?' – B '+mmss(lpB):'');$('#lpOn').textContent=lpOn?'반복 끄기':'반복 켜기';$('#lpOn').classList.toggle('act',lpOn)}
+$('#lpA').onclick=()=>{if(!ytOK)return;lpA=P.getCurrentTime();if(lpB!=null&&lpB<=lpA)lpB=null;lpDraw()};
+$('#lpB').onclick=()=>{if(!ytOK||lpA==null)return say('먼저 A 시작을 누르세요.');const t=P.getCurrentTime();if(t<=lpA+.5)return say('B는 A보다 뒤여야 해요.');lpB=t;lpOn=true;say('');lpDraw();P.seekTo(lpA,true);P.playVideo()};
+$('#lpOn').onclick=()=>{if(lpA==null||lpB==null)return say('A 시작과 B 끝을 먼저 정하세요.');lpOn=!lpOn;lpDraw();if(lpOn&&ytOK){P.seekTo(lpA,true);P.playVideo()}};
+function drawSeg(){$$('#watch .seg').forEach(b=>b.style.display=CUES[+b.dataset.seg]?'inline-block':'none')}
+$$('#watch .seg').forEach(b=>b.onclick=()=>{const c=CUES[+b.dataset.seg];if(!ytOK||!c)return;lpOn=false;lpDraw();fired.add(+b.dataset.seg);segEnd=c;say('');P.seekTo(Math.max(0,c-7),true);P.playVideo()});
+$$('#watch .mic').forEach(b=>b.addEventListener('click',()=>{if(ytOK)P.pauseVideo()}));
+setInterval(()=>{if(!ytOK||pgs[cur].id!=='watch'||!P.getCurrentTime)return;const t=P.getCurrentTime();$('#ytT').textContent=mmss(t);
+  if(P.getPlayerState()!==1)return;
+  if(lpOn&&lpB!=null&&t>=lpB){P.seekTo(lpA,true);return}
+  if(segEnd!=null&&t>=segEnd){segEnd=null;P.pauseVideo();return}
+  if(lpOn)return;
+  CUES.forEach((c,i)=>{if(!fired.has(i)&&t>=c&&t<c+3){fired.add(i);P.pauseVideo();const inp=$$('#watch .gap')[i];if(inp)inp.focus();say(`멈췄어요. 빈칸을 쓰거나 말한 뒤 ▶ Play를 누르세요.`)}})},200);
+drawSeg();
+if(qs.has('setup')){$('#setup').style.display='block';const out=()=>{$('#cueOut').textContent=CUES.length?location.origin+location.pathname+'?cues='+CUES.join(','):'아직 지정한 지점이 없어요.';drawSeg()};out();
+  $('#cueAdd').onclick=()=>{if(ytOK&&CUES.length<3){CUES.push(Math.round(P.getCurrentTime()*10)/10);fired.add(CUES.length-1);out()}};$('#cueClr').onclick=()=>{CUES=[];fired.clear();out()}}
+
+/* ---------- voice recording ---------- */
+{let mr=null,chunks=[];const b=$('#rec2');
+ if(!navigator.mediaDevices||!window.MediaRecorder)b.style.display='none';
+ b.onclick=async()=>{if(mr){mr.stop();return}
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:true});chunks=[];mr=new MediaRecorder(st);
+   mr.ondataavailable=e=>chunks.push(e.data);
+   mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());const a=$('#recAu');a.src=URL.createObjectURL(new Blob(chunks,{type:mr.mimeType}));a.style.display='block';mr=null;b.textContent='● Record';b.classList.remove('rec')};
+   mr.start();b.textContent='■ Stop';b.classList.add('rec')}catch(e){$('#sayHint').textContent='마이크 권한을 허용해 주세요.'}}}
+
+/* ---------- browser speech (no AI in this version) ---------- */
+go(0);$('#aioff').style.display='block';
+{const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(SR){const r=new SR();r.lang='en-US';r.continuous=true;r.interimResults=false;let fin=()=>{},st=()=>{};
+  DIC={start:()=>{try{r.start();return Promise.resolve()}catch(e){return Promise.reject(e)}},stop:()=>{r.stop();return Promise.resolve()},onFinal:f=>{fin=f},onState:f=>{st=f}};
+  r.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++)if(e.results[i].isFinal)fin({text:e.results[i][0].transcript.trim()})};
+  r.onend=()=>st({state:'idle'});r.onerror=()=>st({state:'idle'});wireDic()}
+ if(window.speechSynthesis){TTS={speak:t=>{const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.95;speechSynthesis.cancel();speechSynthesis.speak(u);return Promise.resolve()}};
+  $('#ttsWrap').style.display='inline';$('#ttsOn').checked=true}}
+</script>
+</body>
+</html>
